@@ -1,3 +1,4 @@
+const User = require('../users/users-model')
 /*
   If the user does not have a session saved in the server
 
@@ -7,8 +8,11 @@
   }
 */
 exports.restricted = (req, res, next) => {
-  console.log('restricted_middleware')
-  next()
+  if (req.session.user) {
+    next()
+  } else {
+    next({ status: 401, message: "You shall not pass!" })
+  }
 }
 
 /*
@@ -19,9 +23,21 @@ exports.restricted = (req, res, next) => {
     "message": "Username taken"
   }
 */
-exports.checkUsernameFree = (req, res, next) => {
-  console.log('checkUsernameFree')
-  next()
+exports.checkUsernameFree = async (req, res, next) => {
+  try{
+    const { username } = req.body
+    const [exists] = await User.findBy({ username })
+    console.log(exists)
+    if (!exists) {
+      next()
+    }
+    else {
+      next({status: 422, message: "Username taken"})
+    }
+  }
+  catch (err) {
+    next(err)
+  }
 }
 
 /*
@@ -32,11 +48,23 @@ exports.checkUsernameFree = (req, res, next) => {
     "message": "Invalid credentials"
   }
 */
-exports.checkUsernameExists = (req, res, next) => {
-  console.log('checkUsernameExists')
-  next()
+exports.checkUsernameExists = async (req, res, next) => {
+  try{
+    const { username } = req.body
+    const [exists] = await User.findBy({ username: username })
+    console.log(exists)
+    if (exists) {
+      next()
+    }
+    else {
+      next({status: 401, message: "Invalid credentials"})
+    }
+  }
+  catch (err) {
+    next(err)
+  }
 }
-
+ 
 /*
   If password is missing from req.body, or if it's 3 chars or shorter
 
@@ -46,8 +74,19 @@ exports.checkUsernameExists = (req, res, next) => {
   }
 */
 exports.checkPasswordLength = (req, res, next) => {
-  console.log('checkPasswordLength')
-  next()
+  const { password } = req.body
+  if (
+    !password || 
+    typeof password !== 'string' ||
+    password.trim().length < 3
+    ) {
+      next({
+        status: 422, 
+        message: "Password must be longer than 3 chars"})
+    }
+    else {
+      next()
+    }
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules

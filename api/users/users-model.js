@@ -11,14 +11,16 @@ exports.find = async function find() {
 /**
   resolves to an ARRAY with all users that match the filter condition
  */
-  exports.findBy = function findBy(key, value) {
-    db('users')
-      .then(arr => {
-        return arr.filter(elem => elem[key] = value)
-      })
-      .catch(err => {
-        return err
-      })
+  exports.findBy = async function findBy(filter) {
+    try{
+      return await db('users').where(filter)
+
+    }
+    catch (err) {
+      return err
+    }
+    
+  
 }
 
 /**
