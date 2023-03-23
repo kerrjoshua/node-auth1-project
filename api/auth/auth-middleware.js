@@ -6,8 +6,9 @@
     "message": "You shall not pass!"
   }
 */
-function restricted() {
-
+exports.restricted = (req, res, next) => {
+  console.log('restricted_middleware')
+  next()
 }
 
 /*
@@ -18,8 +19,9 @@ function restricted() {
     "message": "Username taken"
   }
 */
-function checkUsernameFree() {
-
+exports.checkUsernameFree = (req, res, next) => {
+  console.log('checkUsernameFree')
+  next()
 }
 
 /*
@@ -30,8 +32,9 @@ function checkUsernameFree() {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists() {
-
+exports.checkUsernameExists = (req, res, next) => {
+  console.log('checkUsernameExists')
+  next()
 }
 
 /*
@@ -42,8 +45,9 @@ function checkUsernameExists() {
     "message": "Password must be longer than 3 chars"
   }
 */
-function checkPasswordLength() {
-
+exports.checkPasswordLength = (req, res, next) => {
+  console.log('checkPasswordLength')
+  next()
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules
